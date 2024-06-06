@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Potential Based Diffusion Motion Planning">
+  <meta name="keywords" content="Machine Learning, ICML, Diffusion Model, Motion Planning, Compositionality, Robotics">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Potential Based Diffusion Motion Planning</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3593LNYVK9"></script>
+<!-- TODO: -->
+<script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-3593LNYVK9');
+</script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.svg">
+  <link rel="stylesheet" href="bootstrap-grid.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+  <script src="load-mathjax.js" async></script>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<!-- <nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+
+  <div class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      <a class="navbar-item" href="https://devinluo27.github.io/">
+      <span class="icon">
+          <i class="fas fa-home"></i>
+      </span>
+      </a>
+
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link">
+          More Research
+        </a>
+        <div class="navbar-dropdown">
+          <a class="navbar-item" href="https://energy-based-model.github.io/Compositional-Visual-Generation-with-Composable-Diffusion-Models/">
+            Composable Diffusion
+          </a>
+          <a class="navbar-item" href="https://energy-based-model.github.io/comet/">
+            COMET
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+</nav> -->
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">Learning Iterative Reasoning through Energy Diffusion</h1>
+            <!-- <h2 class="title is-size-2">ICCV 2023</h2> -->
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://devinluo27.github.io/">Yilun Du</a><sup>*</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://chensun.me/">Jiayuan Mao</a><sup>*</sup>,
+            </span>
+            <span class="author-block">
+              <a href="http://web.mit.edu/cocosci/josh.html">Joshua B. Tenenbaum</a>
+            </span>
+            
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">MIT CSAIL</span>
+            <p>(* indicates equal contribution)</p>
+            <br><b>ICML 2024</b>
+          </div>
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <!-- TODO: -->
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <!-- TODO: -->
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Code Link. -->
+              <span class="link-block">
+                <!-- TODO: -->
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+          We introduce iterative reasoning through energy diffusion (IRED), a novel framework for learning to reason for a variety of tasks by formulating reasoning and decision-making problems with energy-based optimization. IRED learns energy functions to represent the constraints between input conditions and desired outputs. After training, IRED adapts the number of optimization steps during inference based
+on problem difficulty, enabling it to solve problems outside its training distribution — such as more complex Sudoku puzzles, matrix completion with large value magnitudes, and path finding in larger graphs. Key to our method’s success is two novel techniques: learning a sequence of annealed energy landscapes for easier inference and a combination of score function and energy landscape supervision for faster and more stable training. Our experiments show that IRED outperforms existing methods in continuous-space reasoning, discrete-space reasoning, and planning tasks, particularly in more challenging scenarios.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <center>
+      <figure>
+        <a>
+            <img width="100%" src="materials/method.png">
+        </a>
+        <p class="caption">
+            <b>Reasoning as Optimizing a Sequence of Energy Landscapes.</b>
+            Our approach formulates reasoning as iteratively optimizing a sequence of learned energy functions. Energy functions are trained with a combination of score function supervision and contrastive energy landscape supervision.
+        </p>
+    </figure>
+    </center>
+
+    </div>
+  </div>
+</section>
+
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+
+    <!-- Animation. -->
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-4">Continuous Algorithmic Reasoning</h2>
+
+          <p>
+          Our approach can solve a set of continuous algorithmic tasks such as matrix addition, matrix inverse and matrix completion. Below, we illustrate the error map of the predictions of our approach on the matrix inverse task as we iteratively optimize each energy landscape.
+          </p>
+
+          <br/>
+        <div class="centered-caption"  width="50%">
+          <figure>
+            <img width="50%" src="materials/energy_minima.png" alt="">
+            <br/>
+            <div class="left-caption">
+              <b>Error Map Across Landscape Optimization.</b>
+              Illustration of prediction error on the matrix inverse task as predictions are optimized. Optimization results at later energy landscapes have lower prediction error. 
+            </div>
+          </figure>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+
+    <!-- Animation. -->
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-4">Discrete-Space Reasoning</h2>
+          <p>
+          Our approach can also solve discrete reasoning tasks such as Sudoku. Below, we illustrate the predicted solutions to the Sudoku problem as we run optimization over additional energy landscapes.
+          </p>
+
+        <br/>
+        <div class="centered-caption"  width="60%">
+          <figure>
+            <img width="60%" src="materials/sudoku_opt.png" alt="">
+            <br/>
+            <div class="left-caption">
+              <b>Predicted Sudoku Solutions Over Energy Landscape.</b>
+              Illustration of predicted sudoku boards across optimized energy landscapes. Incorrect entries are highlighted in red. At later landscapes, predicted sudoku boards are more accurate. 
+            </div>
+          </figure>
+        </div>
+        <br/>
+
+          <p>
+          When generalizing to harder variants of Sudoku (with fewer numerical entries given), we can leverage additional test-time optimization iterations to obtain the final more accurate answer.
+          </p>
+
+        <div class="centered-caption"  width="40%">
+          <figure>
+            <img width="40%" src="materials/performance_sudoku.png" alt="">
+            <br/>
+            <div class="left-caption">
+              <b>Generalization Performance with Per Landscape Optimization Steps.</b>
+              By increasing the number of optimization steps run at each energy landscape, IRED is able to leverage additional computational steps to improve the final performance on harder variants of Sudoku.
+            </div>
+          </figure>
+        </div>
+        
+        
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+
+    <!-- Animation. -->
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-4">Planning</h2>
+
+        <p> 
+          Finally, our approach can also solve planning problems. Below, we illustrate how IRED enables us to find the correct next action to take in a graph given start node (green) to a goal node (red).
+        </p>
+        <br/>
+        <div class="centered-caption"  width="60%">
+          <figure>
+            <img width="60%" src="materials/graph_minima.png" alt="">
+            <br/>
+            <div class="left-caption">
+              <b>Optimized Plans Across Landscapes.</b>
+             Plot of next action prediction in plans across energy landscapes. In each visualization, the green/red nodes indicate start/goal nodes with connections between nodes indicated with arrows. The darkness of a node indicates the score for selecting the corresponding node as the next node to move to in the predicted plan. As landscapes are sequentially optimized, the correct next action is selected.
+            </div>
+          </figure>
+        </div>
+        
+        
+             <br/>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+        <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Related Projects</h2>
+          Check out a list of our related papers on compositional generation and energy based models. A full list can be found <a href="https://energy-based-model.github.io/Energy-based-Model-MIT/">here</a>!
+          <br>
+          <br>
+        <div class="row vspace-top">
+        <div class="col-sm-3">
+            <video width="100%" playsinline="" autoplay="" preload="" muted="">
+                <source src="materials/related/irem.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="col-sm-9">
+          <div class="paper-title">
+            <a href="https://energy-based-model.github.io/comet/">Learning Iterative Reasoning through Energy Minimization</a>
+        </div>
+        <div>We propose energy optimization as an approach to add iterative reasoning into neural network. We illustrate how this procedure enables generalization to harder instances of problems unseen at training time on both continuous, discrete and image processing tasks. </div>
+        </div>
+        </div>
+          <br>
+
+        <div class="row vspace-top">
+        <div class="col-sm-3">
+            <video width="100%" playsinline="" autoplay="" preload="" muted="">
+                <source src="materials/related/recyle.m4v" type="video/mp4">
+            </video>
+        </div>
+        <div class="col-sm-9">
+          <div class="paper-title">
+            <a href="https://energy-based-model.github.io/reduce-reuse-recycle/">Reduce, Reuse, Recycle: Compositional Generation with Energy-Based Diffusion Models and MCMC</a>
+        </div>
+        <div>
+            We propose new samplers, inspired by MCMC, to enable successful compositional generation. Further, we propose an energy-based parameterization of diffusion models which enables the use of new compositional operators and more sophisticated, Metropolis-corrected samplers.
+        </div>
+        </div>
+        </div>
+
+        </div>
+</section> 
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content column is-full-width ">
+    <!-- TODO: -->
+    <h2 class="title is-4">BibTeX</h2>
+    <pre><code> Coming Soon.
+      <!-- @InProceedings{Liu_2023_ICCV,
+    author    = {Liu, Nan and Du, Yilun and Li, Shuang and Tenenbaum, Joshua B. and Torralba, Antonio},
+    title     = {Unsupervised Compositional Concepts Discovery with Text-to-Image Generative Models},
+    booktitle = {Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
+    month     = {October},
+    year      = {2023},
+    pages     = {2085-2095}
+} -->
+</code></pre>
+  </div>
+</section>
+
+
+
+
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <!-- TODO: -->
+      <a class="icon-link"
+         href="">
+        <i class="fas fa-file-pdf"></i>
+      </a>
+      <a class="icon-link" href="" class="external-link" disabled>
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8 has-text-centered">
+        <div class="content">
+          <p>
+            This website is forked from the
+						<a href="https://nerfies.github.io/">Nerfies</a> and
+						<a href="https://github.com/nerfies/nerfies.github.io">source code</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
